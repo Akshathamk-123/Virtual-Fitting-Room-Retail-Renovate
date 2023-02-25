@@ -24,6 +24,14 @@ selectionSpeed = 10
 def home():
     return render_template("first_page.html")
 
+@app.route('/admin')
+def admin():
+    return render_template("admin.html")
+
+@app.route('/aboutus')
+def aboutus():
+    return render_template("aboutus.html")
+
 @app.route('/cam')
 def index():
     return render_template('index.html')
