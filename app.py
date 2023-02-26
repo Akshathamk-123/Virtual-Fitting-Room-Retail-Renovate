@@ -47,9 +47,10 @@ def form():
     return render_template('form.html')
 
 shirtFolderPath1=""
-@app.route('/delete', methods=['GET', 'POST'])
+@app.route('/delete/', methods=['GET', 'POST'])
 def delete():
     if request.method =="POST":
+        print("Req recieved")
         global shirtFolderPath1
         shirtFolderPath1 ="C:/Users/AKSHATHA MK/OneDrive/Documents/ar_dress_basic_integrate_flask/Resources/Shirts" + "/"+request.form.get('size')+"/"+request.form.get('name')+".png"
         # elif size=="XL":
