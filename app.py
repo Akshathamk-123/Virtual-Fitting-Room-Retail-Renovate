@@ -46,6 +46,23 @@ def form():
         return redirect('/cam')
     return render_template('form.html')
 
+shirtFolderPath1=""
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if request.method =="POST":
+        global shirtFolderPath1
+        shirtFolderPath1 ="C:/Users/AKSHATHA MK/OneDrive/Documents/ar_dress_basic_integrate_flask/Resources/Shirts" + "/"+request.form.get('size')+"/"+request.form.get('name')+".png"
+        # elif size=="XL":
+        #     shirtFolderPath = "Resources/Shirts/XL"
+        # else:
+        #     shirtFolderPath = "Resources/Shirts/XXL"
+        os.remove(shirtFolderPath1)
+        return redirect('/confirmation')
+    return render_template('delete.html')
+
+@app.route('/confirmation')
+def confirmation():
+    return render_template('confirmation.html')
 
 @app.route('/cam')
 def index():
