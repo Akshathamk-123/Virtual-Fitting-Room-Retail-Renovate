@@ -1,27 +1,28 @@
-from flask import Flask, render_template, Response,redirect, url_for
+from flask import Flask, render_template, Response,redirect, url_for,request
 import cv2
 from cvzone.PoseModule import PoseDetector
 import os
 import cvzone
+
 
 app = Flask(__name__)
 
 cap = cv2.VideoCapture(0)
 detector = PoseDetector()
 
-shirtFolderPath = "Resources/Shirts"
-listShirts = os.listdir(shirtFolderPath)
-fixedRatio = 300 / 190  # widthOfShirt/widthOfPoint11to12
-shirtRatioHeightWidth = 500 / 500
-imageNumber = 0
-imgButtonRight = cv2.imread("Resources/button.png", cv2.IMREAD_UNCHANGED)
-imgButtonLeft = cv2.flip(imgButtonRight, 1)
-counterRight = 0
-counterLeft = 0
-selectionSpeed = 10
+class Size():
+    size = ""
+    shirtFolderPath = ""
+    def __init__(self,size,path = "Resources/Shirts") -> None:
+        self.size = size
+        self.shirtFolderPath = path
+        pass
+
+size = Size("medium")
 
 @app.route('/')
 def home():
+    print(size.shirtFolderPath)
     return render_template("first_page.html")
 
 @app.route('/admin')
@@ -36,7 +37,62 @@ def aboutus():
 def index():
     return render_template('index.html')
 
+@app.route('/form', methods=['GET', 'POST'])
+def form():
+    if request.method =="POST":
+        size.size = request.form.get('size')
+
+        print(size.size)
+        if size.size=="small":
+            size.shirtFolderPath = "Resources/Shirts"
+        elif size.size=="medium":
+             size.shirtFolderPath = "Resources/Shirts"
+        # elif size=="L":
+        #     shirtFolderPath = "Resources/Shirts/L"
+        # elif size=="XL":
+        #     shirtFolderPath = "Resources/Shirts/XL"
+        # else:
+        #     shirtFolderPath = "Resources/Shirts/XXL"
+
+        return redirect('/cam')
+    return render_template('form.html')
+
+# shirtFolderPath = ""
+# print(size.size)
+# if size.size=="S":
+#     shirtFolderPath = "Resources/Shirts"
+# elif size.size=="M":
+#     shirtFolderPath = "Resources/Shirts"
+# elif size=="L":
+#     shirtFolderPath = "Resources/Shirts/L"
+# elif size=="XL":
+#     shirtFolderPath = "Resources/Shirts/XL"
+# else:
+#     shirtFolderPath = "Resources/Shirts/XXL"
+
+# listShirts = os.listdir(shirtFolderPath)
+# fixedRatio = 300 / 190  # widthOfShirt/widthOfPoint11to12
+# shirtRatioHeightWidth = 500 / 500
+# imageNumber = 0
+# imgButtonRight = cv2.imread("Resources/button.png", cv2.IMREAD_UNCHANGED)
+# imgButtonLeft = cv2.flip(imgButtonRight, 1)
+# counterRight = 0
+# counterLeft = 0
+# selectionSpeed = 10
+
 def generate_frames():
+
+    listShirts = os.listdir(size.shirtFolderPath)
+    fixedRatio = 300 / 190  # widthOfShirt/widthOfPoint11to12
+    shirtRatioHeightWidth = 500 / 500
+    imageNumber = 0
+    imgButtonRight = cv2.imread("Resources/button.png", cv2.IMREAD_UNCHANGED)
+    imgButtonLeft = cv2.flip(imgButtonRight, 1)
+    counterRight = 0
+    counterLeft = 0
+    selectionSpeed = 10
+
+
     counterRight = 0
     counterLeft = 0
     imageNumber=0
@@ -50,7 +106,7 @@ def generate_frames():
         if lmList:
             lm11 = lmList[11][1:3]
             lm12 = lmList[12][1:3]
-            imgShirt = cv2.imread(os.path.join(shirtFolderPath, listShirts[imageNumber]), cv2.IMREAD_UNCHANGED)
+            imgShirt = cv2.imread(os.path.join(size.shirtFolderPath, listShirts[imageNumber]), cv2.IMREAD_UNCHANGED)
 
             widthOfShirt = int((lm11[0] - lm12[0]) * fixedRatio)
             imgShirt = cv2.resize(imgShirt, (widthOfShirt, int(widthOfShirt * shirtRatioHeightWidth)))
